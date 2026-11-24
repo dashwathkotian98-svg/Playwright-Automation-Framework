@@ -215,4 +215,65 @@ test('PW_TC_009 - Verify Home navigation and Sign Up functionality', async ({ pa
 
 });
 
+// E2E_001: Radio Button, Dropdown & Checkbox
+test('E2E_001 - Verify user can complete form selections', async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto(practice.url, { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/AutomationPractice/);
+
+    const radioButton = page.locator(practice.radio1);
+    const dropdown = page.locator(practice.dropdown);
+    const checkbox1 = page.locator(practice.checkbox1);
+    const checkbox2 = page.locator(practice.checkbox2);
+
+    await radioButton.check();
+    await dropdown.selectOption({ label: 'Option2' });
+    await checkbox1.check();
+    await checkbox2.check();
+
+    await expect(radioButton).toBeChecked();
+    await expect(dropdown).toHaveValue('option2');
+    await expect(checkbox1).toBeChecked();
+    await expect(checkbox2).toBeChecked();
+});
+
+// E2E_002: Text Input & JavaScript Alert
+test('E2E_002 - Verify entered name is displayed in the JavaScript alert', async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto(practice.url, { waitUntil: 'domcontentloaded' });
+
+    const name = 'Dashwath';
+    const nameTextbox = page.locator(practice.name);
+    const alertButton = page.locator(practice.alertButton);
+
+    await nameTextbox.fill(name);
+    await expect(nameTextbox).toHaveValue(name);
+
+    const dialogPromise = page.waitForEvent('dialog').then(async dialog => {
+        expect(dialog.message()).toContain(name);
+        await dialog.accept();
+    });
+
+    await alertButton.click();
+    await dialogPromise;
+
+    await expect(nameTextbox).toBeVisible();
+});
+
+// E2E_003: Textbox Hide & Show
+test('E2E_003 - Verify user can hide and show the text input field', async ({ page }) => {
+    test.setTimeout(60000);
+    await page.goto(practice.url, { waitUntil: 'domcontentloaded' });
+
+    const textBox = page.locator(practice.displayedText);
+    const hideButton = page.locator(practice.hideTextBox);
+    const showButton = page.locator(practice.showTextBox);
+
+    await expect(textBox).toBeVisible();
+    await hideButton.click();
+    await expect(textBox).toBeHidden();
+    await showButton.click();
+    await expect(textBox).toBeVisible();
+});
+
 
