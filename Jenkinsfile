@@ -4,6 +4,7 @@ pipeline {
 
     tools {
         nodejs 'NodeJS'
+        allure 'Allure'
     }
 
     stages {
@@ -31,6 +32,28 @@ pipeline {
             steps {
                 bat 'npx playwright test'
             }
+        }
+    }
+
+    post {
+        always {
+            allure([
+                includeProperties: false,
+                results: [[path: 'allure-results']]
+            ])
+
+            archiveArtifacts(
+                artifacts: 'allure-results/**',
+                allowEmptyArchive: true
+            )
+        }
+
+        success {
+            echo 'Playwright tests passed successfully'
+        }
+
+        failure {
+            echo 'Playwright tests failed. Check Allure report.'
         }
     }
 }
