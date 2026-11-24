@@ -23,6 +23,8 @@ pipeline {
             steps {
                 bat 'if exist test-results rmdir /s /q test-results'
                 bat 'if exist playwright-report rmdir /s /q playwright-report'
+                bat 'if exist allure-results rmdir /s /q allure-results'
+                bat 'if exist allure-report rmdir /s /q allure-report'
             }
         }
 
@@ -47,6 +49,23 @@ pipeline {
 
     post {
         always {
+            script {
+                if (fileExists('allure-results')) {
+                    bat 'npm run allure:generate'
+                } else {
+                    echo 'No Allure results were generated.'
+                }
+            }
+
+            publishHTML(target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'allure-report',
+                reportFiles: 'index.html',
+                reportName: 'Allure HTML Report'
+            ])
+
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -57,7 +76,7 @@ pipeline {
             ])
 
             archiveArtifacts(
-                artifacts: 'playwright-report/**,test-results/**',
+                artifacts: 'allure-results/**,allure-report/**,playwright-report/**,test-results/**',
                 allowEmptyArchive: true
             )
         }
