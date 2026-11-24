@@ -8,13 +8,13 @@ Playwright tests on a Windows agent and archives test artifacts.
 1. Install the **Pipeline**, **Git**, **NodeJS**, and **HTML Publisher** Jenkins
    plugins.
 2. In **Manage Jenkins > Tools**, configure a NodeJS installation named `NodeJS`.
-3. Configure a Windows agent. The pipeline uses Windows `bat` steps, so the
-   node selected by `agent any` must be Windows. Ensure the agent can
+3. Configure a Windows agent with the label `windows`. The pipeline uses
+   Windows `bat` steps, so it must run on a Windows node. Ensure the agent can
    access the internet to install npm packages and the Playwright Chromium
    browser.
 
-The NodeJS tool name must match the value in `Jenkinsfile`, or the Jenkinsfile
-must be updated to match your Jenkins configuration.
+The NodeJS tool name and agent label must match the values in `Jenkinsfile`, or
+the Jenkinsfile must be updated to match your Jenkins configuration.
 
 ## Create the job
 
