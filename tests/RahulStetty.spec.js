@@ -86,18 +86,13 @@ test('PW_TC_004 - Verify alert functionality', async ({ page }) => {
     // Enter name
     await nameTextbox.fill('dashwath');
 
-    // Handle JavaScript alert
-    page.once('dialog', async dialog => {
-
-        console.log('Alert message:', dialog.message());
-
+    const dialogPromise = page.waitForEvent('dialog').then(async dialog => {
+        expect(dialog.message()).toContain('dashwath');
         await dialog.accept();
-
     });
 
-    // Click alert button
     await alertButton.click();
-
+    await dialogPromise;
 });
 
 // Test Case 05: Verify new window functionality
@@ -175,6 +170,10 @@ test('PW_TC_008 - Verify dropdown functionality', async ({ page }) => {
 
 // Test Case 09: Verify Home navigation and Sign Up functionality
 test('PW_TC_009 - Verify Home navigation and Sign Up functionality', async ({ page, context }) => {
+    test.skip(Boolean(process.env.CI), 'This flow sends a real verification email and is excluded from CI.');
+
+    const signupTestEmail = process.env.SIGNUP_TEST_EMAIL;
+    test.skip(!signupTestEmail, 'Set SIGNUP_TEST_EMAIL to a dedicated test address to run this flow.');
 
     // Step 1: Navigate to Automation Practice page
     await page.goto(practice.url);
@@ -203,16 +202,16 @@ test('PW_TC_009 - Verify Home navigation and Sign Up functionality', async ({ pa
 
     // Step 6: Enter email
     const emailField = signUpPage.locator(locators.signUpPage.email);
-    await emailField.fill('dashwathkotian98@gmail.com');
+    await emailField.fill(signupTestEmail);
+    await expect(emailField).toHaveValue(signupTestEmail);
 
     // Step 7: Select marketing emails checkbox
     const checkbox = signUpPage.locator(locators.signUpPage.marketingEmailsCheckbox);
     await checkbox.check();
+    await expect(checkbox).toBeChecked();
 
     // Step 8: Click Send Code button
     await signUpPage.locator(locators.signUpPage.sendCodeButton).click();
-
-    console.log('Sign Up form submitted successfully');
 
 });
 
