@@ -22,6 +22,13 @@ pipeline {
             }
         }
 
+        stage('Clean Previous Results') {
+            steps {
+                bat 'if exist allure-results rmdir /s /q allure-results'
+                bat 'if exist test-results rmdir /s /q test-results'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 bat 'npm ci'
@@ -43,13 +50,19 @@ pipeline {
 
     post {
         always {
-            allure([
-                includeProperties: false,
-                results: [[path: 'allure-results']]
-            ])
+            script {
+                if (fileExists('allure-results')) {
+                    allure([
+                        includeProperties: false,
+                        results: [[path: 'allure-results']]
+                    ])
+                } else {
+                    echo 'No Allure results were generated.'
+                }
+            }
 
             archiveArtifacts(
-                artifacts: 'allure-results/**',
+                artifacts: 'allure-results/**,test-results/**',
                 allowEmptyArchive: true
             )
         }
