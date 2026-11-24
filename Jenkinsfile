@@ -7,6 +7,10 @@ pipeline {
         allure 'Allure'
     }
 
+    environment {
+        CI = 'true'
+    }
+
     stages {
 
         stage('Checkout') {
