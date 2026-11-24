@@ -1,7 +1,7 @@
 
 pipeline {
     agent {
-        label 'windows'
+        label 'Built-In Node'
     }
 
     tools {
