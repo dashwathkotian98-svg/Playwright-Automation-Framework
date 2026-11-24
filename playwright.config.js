@@ -9,12 +9,7 @@ module.exports = defineConfig({
 
     retries: process.env.CI ? 2 : 0,
 
-    reporter: [
-    ['list'],
-    ['allure-playwright', {
-        resultsDir: 'allure-results'
-    }]
-],
+    reporter: 'list',
 
     use: {
         baseURL: 'https://rahulshettyacademy.com',

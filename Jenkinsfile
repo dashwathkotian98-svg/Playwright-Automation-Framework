@@ -6,7 +6,6 @@ pipeline {
 
     tools {
         nodejs 'NodeJS'
-        allure 'Allure'
     }
 
     environment {
@@ -24,7 +23,6 @@ pipeline {
 
         stage('Clean Previous Results') {
             steps {
-                bat 'if exist allure-results rmdir /s /q allure-results'
                 bat 'if exist test-results rmdir /s /q test-results'
             }
         }
@@ -50,19 +48,8 @@ pipeline {
 
     post {
         always {
-            script {
-                if (fileExists('allure-results')) {
-                    allure([
-                        includeProperties: false,
-                        results: [[path: 'allure-results']]
-                    ])
-                } else {
-                    echo 'No Allure results were generated.'
-                }
-            }
-
             archiveArtifacts(
-                artifacts: 'allure-results/**,test-results/**',
+                artifacts: 'test-results/**',
                 allowEmptyArchive: true
             )
         }
@@ -72,7 +59,7 @@ pipeline {
         }
 
         failure {
-            echo 'Playwright tests failed. Check Allure report.'
+            echo 'Playwright tests failed. Check the console output and archived test artifacts.'
         }
     }
 }

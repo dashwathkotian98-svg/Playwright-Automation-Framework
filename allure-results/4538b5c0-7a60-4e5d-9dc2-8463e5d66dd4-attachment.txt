@@ -1,5 +1,0 @@
-Starting checkbox test
-Option1 selected: true
-Option2 selected: true
-Option3 selected: true
-All checkboxes selected successfully
