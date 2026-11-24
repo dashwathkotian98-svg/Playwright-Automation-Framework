@@ -7,16 +7,18 @@ module.exports = defineConfig({
 
     fullyParallel: false,
 
-    retries: 0,
+    retries: process.env.CI ? 2 : 0,
 
     reporter: [
-        ['list'],
-        ['html', { open: 'never' }]
-    ],
+    ['list'],
+    ['allure-playwright', {
+        resultsDir: 'allure-results'
+    }]
+],
 
     use: {
         baseURL: 'https://rahulshettyacademy.com',
-        headless: false,
+        headless: !!process.env.CI,
         viewport: null,
 
         launchOptions: {
