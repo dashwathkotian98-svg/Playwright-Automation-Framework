@@ -9,7 +9,13 @@ module.exports = defineConfig({
 
     retries: process.env.CI ? 2 : 0,
 
-    reporter: 'list',
+    reporter: [
+        ['list'],
+        ['html', {
+            outputFolder: 'playwright-report',
+            open: 'never'
+        }]
+    ],
 
     use: {
         baseURL: 'https://rahulshettyacademy.com',

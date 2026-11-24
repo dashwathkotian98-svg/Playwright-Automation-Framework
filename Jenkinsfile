@@ -1,7 +1,7 @@
 
 pipeline {
     agent {
-        label 'windows'
+        any
     }
 
     tools {
@@ -24,6 +24,7 @@ pipeline {
         stage('Clean Previous Results') {
             steps {
                 bat 'if exist test-results rmdir /s /q test-results'
+                bat 'if exist playwright-report rmdir /s /q playwright-report'
             }
         }
 
@@ -48,8 +49,17 @@ pipeline {
 
     post {
         always {
+            publishHTML(target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright HTML Report'
+            ])
+
             archiveArtifacts(
-                artifacts: 'test-results/**',
+                artifacts: 'playwright-report/**,test-results/**',
                 allowEmptyArchive: true
             )
         }
