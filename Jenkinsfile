@@ -21,8 +21,7 @@ pipeline {
 
         stage('Clean Previous Results') {
             steps {
-                bat 'if exist test-results rmdir /s /q test-results'
-                bat 'if exist playwright-report rmdir /s /q playwright-report'
+                bat 'if exist reports\\html-report rmdir /s /q reports\\html-report'
                 bat 'if exist allure-results rmdir /s /q allure-results'
                 bat 'if exist allure-report rmdir /s /q allure-report'
             }
@@ -51,9 +50,18 @@ pipeline {
         always {
             script {
                 if (fileExists('allure-results')) {
-                    bat 'npm run allure:generate'
+                    echo 'Generating Allure report'
+
+                    def status = bat(
+                        returnStatus: true,
+                        script: 'npm run allure:generate'
+                    )
+
+                    if (status != 0) {
+                        echo 'WARNING: Allure report generation failed'
+                    }
                 } else {
-                    echo 'No Allure results were generated.'
+                    echo 'No Allure results found'
                 }
             }
 
@@ -70,13 +78,13 @@ pipeline {
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
-                reportDir: 'playwright-report',
+                reportDir: 'reports/html-report',
                 reportFiles: 'index.html',
                 reportName: 'Playwright HTML Report'
             ])
 
             archiveArtifacts(
-                artifacts: 'allure-results/**,allure-report/**,playwright-report/**,test-results/**',
+                artifacts: 'allure-results/**,allure-report/**,reports/html-report/**,test-results/**',
                 allowEmptyArchive: true
             )
         }
@@ -86,7 +94,7 @@ pipeline {
         }
 
         failure {
-            echo 'Playwright tests failed. Check the console output and archived test artifacts.'
+            echo 'Playwright tests failed. Check reports and console output.'
         }
     }
 }
